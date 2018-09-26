@@ -1,21 +1,162 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.mycompany.app</groupId>
-  <artifactId>war-app</artifactId>
-  <version>${major}.${minor}.${build}</version>
-  <packaging>war</packaging>
-  <name>war-app Maven Webapp</name>
+  <groupId>co.cask.cdap</groupId>
+  <artifactId>HelloWorld</artifactId>
+  <version>5.0.0</version>
+  <packaging>jar</packaging>
+  <name>Maven App</name>
   <url>http://maven.apache.org</url>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
-    <finalName>war-app</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>default-jar</id>
+            <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.2</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.1</version>
+        <executions>
+          <execution>
+            <id>copy</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>co.cask.cdap</groupId>
+                  <artifactId>HelloWorld</artifactId>
+                  <version>5.0.0</version>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+                  <destFileName>HelloWorld-5.0.2.jar</destFileName>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${project.build.directory}</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>true</overWriteSnapshots>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.7</version>
+        <executions>
+         <execution>
+            <id>default-deploy</id>
+            <phase>none</phase>
+         </execution>
+         <execution>
+            <id>nexus</id>
+            <phase>deploy</phase>
+            <goals>
+                <goal>deploy-file</goal>
+            </goals>
+            <configuration>
+                <groupId>co.cask.cdap</groupId>
+                <artifactId>HelloWorld</artifactId>
+                <version>5.0.2</version>
+                <packaging>jar</packaging>
+                <file>${project.build.directory}/HelloWorld-5.0.2.jar</file>
+                <repositoryId>sample2</repositoryId>
+                <url>http://10.5.2.210:8081/nexus/content/repositories/sample2</url>
+            </configuration>
+        </execution>
+      </executions>
+      </plugin>
+<!--
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.5.1</version>
+        <executions>
+            <execution>
+              <id>nexus</id>
+              <phase>deploy</phase>
+              <goals>
+                <goal>deploy</goal>
+              </goals>
+            </execution>
+        </executions>
+        <configuration>
+          <repoId>sample2</repoId>
+          <url>http://10.5.2.210:8081/nexus/content/repositories/sample2</url>
+          <file>${project.build.directory}/HelloWorld-5.0.0.jar</file>
+          <groupId>co.cask.cdap</groupId>
+          <artifactId>HelloWorld</artifactId>
+          <version>5.0.0</version>
+          <generatePom>true</generatePom>
+        </configuration>
+      </plugin>
+-->
+    </plugins>
+
   </build>
+
+  <distributionManagement>
+    <repository>
+      <id>sample2</id>
+      <url>http://10.5.2.210:8081/nexus/content/repositories/sample2</url>
+    </repository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>sample</id>
+      <url>http://10.5.2.210:8081/nexus/content/repositories/sample</url>
+    </repository>
+
+    <repository>
+      <id>sample2</id>
+      <url>http://10.5.2.210:8081/nexus/content/repositories/sample2</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+ <pluginRepository>
+  <id>sample</id>
+  <name>sample</name>
+  <url>http://10.5.2.210:8081/nexus/content/repositories/sample</url>
+  <releases>
+   <enabled>true</enabled>
+  </releases>
+  <snapshots>
+   <enabled>true</enabled>
+  </snapshots>
+ </pluginRepository>
+</pluginRepositories>
+
 </project>
